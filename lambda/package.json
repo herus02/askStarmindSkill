@@ -1,0 +1,28 @@
+{
+  "name": "ask-starmind",
+  "version": "0.0.1",
+  "description": "Amazon Alexa Starmind Skill",
+  "main": "index.js",
+  "dependencies": {
+    "alexa-app": "^2.3.4",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
+    "lodash": "^4.16.4",
+    "mocha": "^3.1.0",
+    "request-promise": "^4.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Starmind/askStarmindSkill.git"
+  },
+  "author": "Starmind International AG",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Starmind/askStarmindSkill/issues"
+  },
+  "homepage": "https://github.com/Starmind/askStarmindSkill#readme"
+}

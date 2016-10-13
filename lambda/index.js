@@ -1,4 +1,87 @@
-exports.handler = function(event, context) {
-    // TODO implement
-    context.done(null, 'Hello from Lambda!');
-};
+'use strict';
+
+module.change_code = 1;
+
+var _ = require('lodash');
+
+var Alexa = require('alexa-app');
+
+var app = new Alexa.app('askStarmind');
+var StarmindApi = require('./starmind_api');
+
+app.launch(function (req, res) {
+
+  var prompt = 'Do you need help for a certain topic? Just ask me for experts.';
+
+  res.say(prompt).reprompt(prompt).shouldEndSession(false);
+
+});
+
+
+app.intent('FindExperts', {
+    'slots': {
+      'TAGS': 'LIST_OF_TAGS'
+    },
+    'utterances': ["{|who's the expert|who is the expert|who can help me|who can I ask|tell me who is the expert|tell me who's the expert} {|for|with} {-|TAGS}"]
+  },
+
+  function (req, res) {
+
+    //get the slot
+
+    var tags = req.slot('TAGS');
+
+    var rePrompt = "Tell me a topic you're interested in to find the expert.";
+
+    if (_.isEmpty(tags)) {
+
+      var prompt = "I didn't hear a topic. Tell me one you're interested in.";
+
+      res.say(prompt).reprompt(rePrompt).shouldEndSession(false);
+
+      return true;
+
+    } else {
+
+      //console.log(req);
+      var accessToken = req.sessionDetails.accessToken;
+
+      if (_.isNull(accessToken)) {
+        // request user to link the account
+        res.linkAccount();
+      } else {
+        var starmindApi = new StarmindApi(accessToken);
+
+        starmindApi.findExperts(2, tags).then(function (experts) {
+
+          if (_.isEmpty(experts)) {
+            var prompt = "I'm sorry, I couldn't find an expert for " + tags + ". Please try another topic.";
+            res.say(prompt).reprompt(rePrompt).shouldEndSession(false).send();
+          } else {
+            var spokenExperts = _.map(experts, function (item) {
+                return item.user.firstname + " " + item.user.lastname;
+              }
+            );
+            res.say("Ask " + spokenExperts.join(" or ") + " for help.").shouldEndSession(true).send();
+          }
+
+        }).catch(function (err) {
+
+          console.log(err.statusCode);
+
+          var prompt = "ups.. I couldn't find an expert for " + tags;
+
+          res.say(prompt).reprompt(rePrompt).shouldEndSession(false).send();
+
+
+        });
+
+        return false;
+      }
+    }
+
+  }
+);
+
+
+module.exports = app;

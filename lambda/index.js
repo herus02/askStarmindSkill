@@ -33,6 +33,12 @@ app.intent('FindExperts', {
 
     var rePrompt = "Tell me a topic you're interested in to find the expert.";
 
+    function handleNotAuthorized() {
+      console.log("No user token provided, link your account");
+      res.linkAccount().shouldEndSession(true).say('Your Starmind account is not linked. Please use the Alexa App to link the account.');
+      return true;
+    }
+
     if (_.isEmpty(tags)) {
 
       var prompt = "I didn't hear a topic. Tell me one you're interested in.";
@@ -47,11 +53,9 @@ app.intent('FindExperts', {
       var accessToken = req.sessionDetails.accessToken;
 
       if (_.isNull(accessToken)) {
-        // request user to link the account
-        res.linkAccount();
+        return handleNotAuthorized();
       } else {
         var starmindApi = new StarmindApi(accessToken);
-
         starmindApi.findExperts(2, tags).then(function (experts) {
 
           if (_.isEmpty(experts)) {
@@ -66,14 +70,13 @@ app.intent('FindExperts', {
           }
 
         }).catch(function (err) {
-
-          console.log(err.statusCode);
-
-          var prompt = "ups.. I couldn't find an expert for " + tags;
-
-          res.say(prompt).reprompt(rePrompt).shouldEndSession(false).send();
-
-
+          console.log("API returned with status: " + err.statusCode);
+          if (err.statusCode == 401) {
+            handleNotAuthorized();
+          } else {
+            var prompt = "Snap! Something went wrong, I couldn't find an expert for your request.";
+            res.say(prompt).reprompt(rePrompt).shouldEndSession(false).send();
+          }
         });
 
         return false;

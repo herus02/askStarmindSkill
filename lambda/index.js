@@ -11,7 +11,7 @@ var StarmindApi = require('./starmind_api');
 
 app.launch(function (req, res) {
 
-  var prompt = 'Do you need help for a certain topic? I will find an expert for you.';
+  var prompt = 'Do you need help for a certain topic? I will find experts for you.';
 
   res.say(prompt).reprompt(prompt).shouldEndSession(false);
 
@@ -31,16 +31,16 @@ app.intent('FindExperts', {
 
     var tags = req.slot('TAGS');
 
-    var rePrompt = "Tell me a topic you're interested in to find the expert.";
+    var rePrompt = "Tell me at what topic you need help, I will try to find an expert for you.";
 
     function handleNotAuthorized() {
-      console.log("No user token provided, link your account");
+      console.log("No user token provided, link your Starmind account");
       res.linkAccount().shouldEndSession(false).say('Your Starmind account is not linked. Please use the Alexa App to link your Starmind account.');
       return true;
     }
 
     function handleNotAuthorizedExpired() {
-      console.log("Your user token has expired, please link your account again with the Alexa app");
+      console.log("Your user token has expired, please link your Starmind account again with the Alexa app");
       res.linkAccount().shouldEndSession(false).say('Your Starmind session has expired. Please link your Starmind account again using the Alexa App.');
       return true;
     }

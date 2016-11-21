@@ -39,27 +39,16 @@ app.intent('FindExperts', {
       return true;
     }
 
-    function handleError() {
-      var prompt = "Snap! Something went wrong, I couldn't find an expert for your request.";
-      res.say(prompt).reprompt(rePrompt).shouldEndSession(false).send();
+    function handleNotAuthorizedExpired() {
+      console.log("Your user token has expired, please link your account again with the Alexa app");
+      res.linkAccount().shouldEndSession(false).say('Your Starmind session has expired. Please link your Starmind account again using the Alexa App.');
+      return true;
     }
 
-    function handleNotAuthorizedExpired(starmindApi) {
-      console.log("User token expired, try to refresh");
-      starmindApi.refreshToken().then(function (response) {
-        console.log("Token refresh successful, try again finding experts.");
-        req.sessionDetails.accessToken = response.token;
-        findExperts(response.token);
-      }).catch(function (err) {
-        console.log("App refresh returned with status: " + err.statusCode);
-        if (err.statusCode == 401) {
-          console.log("Your user token has expired, please link your account again with the Alexa app");
-          res.linkAccount().shouldEndSession(false).say('Your Starmind session has expired. Please link your Starmind account again using the Alexa App.');
-          return true;
-        } else {
-          handleError();
-        }
-      });
+    function handleError() {
+      var prompt = "Snap! Something went wrong, I couldn't find an expert for your request.";
+      res.say(prompt).reprompt(rePrompt).shouldEndSession(true).send();
+      return false;
     }
 
     function findExperts(accessToken) {
@@ -93,7 +82,7 @@ app.intent('FindExperts', {
           }).catch(function (err) {
             console.log("Expert search returned with status: " + err.statusCode);
             if (err.statusCode == 401) {
-              handleNotAuthorizedExpired(starmindApi);
+              handleNotAuthorizedExpired();
             } else {
               handleError();
             }

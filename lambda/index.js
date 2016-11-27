@@ -78,7 +78,6 @@ app.intent('FindExperts', {
               console.log(spokenExperts);
               res.say("Ask " + spokenExperts.join(" or contact ") + " for help.").shouldEndSession(true).send();
             }
-
           }).catch(function (err) {
             console.log("Expert search returned with status: " + err.statusCode);
             if (err.statusCode == 401) {
@@ -87,13 +86,12 @@ app.intent('FindExperts', {
               handleError();
             }
           });
-
-          return false;
         }
       }
     }
 
     findExperts(req.sessionDetails.accessToken);
+    return false;
   }
 );
 

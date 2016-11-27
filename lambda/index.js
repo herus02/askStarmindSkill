@@ -11,7 +11,7 @@ var StarmindApi = require('./starmind_api');
 
 app.launch(function (req, res) {
 
-  var prompt = 'Do you need help for a certain topic? I will find experts for you.';
+  var prompt = 'Do you need help for a certain topic? Starmind will find an expert for you.';
 
   res.say(prompt).reprompt(prompt).shouldEndSession(false);
 
@@ -46,7 +46,7 @@ app.intent('FindExperts', {
     }
 
     function handleError() {
-      var prompt = "Snap! Something went wrong, I couldn't find an expert for your request.";
+      var prompt = "Oh snap! Something went wrong, I couldn't find an expert to your request.";
       res.say(prompt).reprompt(rePrompt).shouldEndSession(true).send();
       return false;
     }
@@ -76,7 +76,7 @@ app.intent('FindExperts', {
                 }
               );
               console.log(spokenExperts);
-              res.say("Ask " + spokenExperts.join(" or ") + " for help.").shouldEndSession(true).send();
+              res.say("Ask " + spokenExperts.join(" or contact ") + " for help.").shouldEndSession(true).send();
             }
 
           }).catch(function (err) {

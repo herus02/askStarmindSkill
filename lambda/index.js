@@ -12,12 +12,14 @@ var rePrompt = "Just tell me a topic you're interested in and I will try to find
 
 app.launch(function (req, res) {
 
-  var prompt = "Do you need help for a certain topic? Starmind will find an expert for you.";
-
-  res.say(prompt).reprompt(rePrompt).shouldEndSession(false);
+  if (_.isNull(req.sessionDetails.accessToken)) {
+    res.linkAccount().shouldEndSession(true).say('Your Starmind account is not linked. Please use the Alexa App to link your Starmind account.');
+  } else {
+    var prompt = "Do you need help for a certain topic? Starmind will find an expert for you.";
+    res.say(prompt).reprompt(rePrompt).shouldEndSession(false);
+  }
 
 });
-
 
 app.intent('FindExperts', {
     'slots': {

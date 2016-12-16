@@ -44,6 +44,7 @@ app.intent('FindExperts', {
     }
 
     function findExperts(accessToken) {
+      // Since we told that our request will complete async, starting from here we must take care of the async handling (request must be terminated with send())
       var tags = req.slot('TAGS', []);
       if (_.isEmpty(tags)) {
         res.say("I didn't hear a topic. Tell me one you're interested in and I will try to find an expert for you.").reprompt(rePrompt).shouldEndSession(false).send();
@@ -51,7 +52,6 @@ app.intent('FindExperts', {
         if (_.isNull(accessToken)) {
           handleNoAccessToken();
         } else {
-          // Everything starting form here must take care of async handling (request must be terminated with send())
           var starmindApi = new StarmindApi(accessToken);
           starmindApi.findExperts(2, tags).then(function (experts) {
             if (_.isEmpty(experts)) {

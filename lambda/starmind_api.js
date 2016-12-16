@@ -2,7 +2,7 @@
 var _ = require('lodash');
 var rp = require('request-promise');
 
-var EXPERTS = 'https://dev01.starmind.com/api/v1/statistics/network/experts';
+var EXPERTS = 'https://staging.starmind.com/api/v1/statistics/network/experts';
 
 function StarmindApi(accessToken) {
   this.accessToken = accessToken;
